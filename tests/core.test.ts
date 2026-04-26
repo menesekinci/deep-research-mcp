@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { loadConfig } from "../src/config.js";
 import { ResearchScheduler } from "../src/research/service.js";
 import type { SearchProvider } from "../src/research/types.js";
 import { expandQueries } from "../src/research/queryExpansion.js";
@@ -29,6 +30,33 @@ describe("rate limit helpers", () => {
     const date = nextAllowedFromHeaders("0, 100", "2, 1000");
     expect(date).toBeInstanceOf(Date);
     expect(date!.getTime()).toBeGreaterThan(Date.now());
+  });
+});
+
+describe("config loading", () => {
+  it("loads secrets from a config file and lets env override them", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "deep-research-config-"));
+    const configPath = path.join(tmp, "config.json");
+    fs.writeFileSync(
+      configPath,
+      JSON.stringify({
+        homeDir: path.join(tmp, "home"),
+        braveApiKey: "file-brave",
+        github_token: "file-github",
+        context7ApiKey: "file-context7"
+      })
+    );
+
+    const config = loadConfig({
+      DEEP_RESEARCH_CONFIG: configPath,
+      BRAVE_API_KEY: "env-brave"
+    });
+
+    expect(config.homeDir).toBe(path.join(tmp, "home"));
+    expect(config.dbPath).toBe(path.join(tmp, "home", "research.sqlite"));
+    expect(config.braveApiKey).toBe("env-brave");
+    expect(config.githubToken).toBe("file-github");
+    expect(config.context7ApiKey).toBe("file-context7");
   });
 });
 
