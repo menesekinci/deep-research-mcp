@@ -63,12 +63,15 @@ describe("config loading", () => {
 describe("research storage and scheduler", () => {
   it("returns top-level job_id and status fields from service tools", async () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "deep-research-service-"));
-    const service = await ResearchService.create({
-      homeDir: tmp,
-      dbPath: path.join(tmp, "research.sqlite"),
-      defaultDepth: "standard",
-      defaultSourceTypes: ["github"]
-    });
+    const service = await ResearchService.create(
+      {
+        homeDir: tmp,
+        dbPath: path.join(tmp, "research.sqlite"),
+        defaultDepth: "standard",
+        defaultSourceTypes: ["github"]
+      },
+      { autoRun: false }
+    );
 
     const started = service.start({
       query: "mcp test",

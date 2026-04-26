@@ -24,7 +24,8 @@ export class ResearchService {
 
   private constructor(
     readonly db: ResearchDb,
-    readonly config: AppConfig
+    readonly config: AppConfig,
+    private readonly autoRun = true
   ) {
     const providers = new Map<SourceType, SearchProvider>([
       ["web", new BraveProvider(config.braveApiKey, db)],
@@ -34,10 +35,12 @@ export class ResearchService {
     this.scheduler = new ResearchScheduler(db, providers);
   }
 
-  static async create(config: AppConfig): Promise<ResearchService> {
+  static async create(config: AppConfig, options: { autoRun?: boolean } = {}): Promise<ResearchService> {
     const db = await ResearchDb.open(config.dbPath);
-    const service = new ResearchService(db, config);
-    service.scheduler.start();
+    const service = new ResearchService(db, config, options.autoRun ?? true);
+    if (service.autoRun) {
+      service.scheduler.start();
+    }
     return service;
   }
 
@@ -60,7 +63,9 @@ export class ResearchService {
     }
     this.db.saveAfterBatch();
     this.db.addEvent(job.id, "info", "research job started", { sourceTypes, depth });
-    this.scheduler.kick();
+    if (this.autoRun) {
+      this.scheduler.kick();
+    }
     return { ...job, job_id: job.id, estimated_budget: { ...budget, maxSources: job.maxSources, durationMinutes: job.durationMinutes } };
   }
 
