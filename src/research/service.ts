@@ -161,10 +161,12 @@ export class ResearchScheduler {
       const enoughSources = Number(counts.sources_total ?? 0) >= latest.maxSources;
       const done = enoughSources || (pendingQueries === 0 && pendingSources === 0);
       if (done) {
-        const reportMarkdown = buildReport(this.db, latest);
+        const completedAt = nowIso();
+        const completedJob: ResearchJob = { ...latest, status: "completed", completedAt, nextRunAt: null };
+        const reportMarkdown = buildReport(this.db, completedJob);
         this.db.updateJob(latest.id, {
           status: "completed",
-          completedAt: nowIso(),
+          completedAt,
           reportMarkdown,
           nextRunAt: null
         });
@@ -202,11 +204,16 @@ export class ResearchScheduler {
         const ranked = result.candidates
           .map((candidate) => ({ ...candidate, score: scoreCandidate(candidate, job.query) }))
           .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-        for (const candidate of ranked.slice(0, budget.searchResultsPerQuery)) {
+        const counts = this.db.counts(job.id);
+        const remainingSources = Math.max(0, job.maxSources - Number(counts.sources_total ?? 0));
+        for (const candidate of ranked.slice(0, Math.min(budget.searchResultsPerQuery, remainingSources))) {
           this.db.insertCandidate(job.id, limitCandidate(candidate));
         }
         this.db.updateQuery(query.id, "completed");
         this.db.saveAfterBatch();
+        if (remainingSources <= 0) {
+          return;
+        }
       } catch (error) {
         if (isRateLimit(error)) {
           this.db.updateQuery(query.id, "rate_limited", error.message);

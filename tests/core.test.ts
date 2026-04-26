@@ -103,16 +103,14 @@ describe("research storage and scheduler", () => {
     const provider: SearchProvider = {
       sourceType: "web",
       search: async () => ({
-        candidates: [
-          {
-            sourceType: "web",
-            provider: "mock",
-            url: "https://example.com/page?utm_source=test",
-            title: "Example Page",
-            snippet: "A relevant example page.",
-            content: "This is clean research text. ".repeat(200)
-          }
-        ]
+        candidates: Array.from({ length: 10 }, (_, index) => ({
+          sourceType: "web",
+          provider: "mock",
+          url: `https://example.com/page-${index}?utm_source=test`,
+          title: `Example Page ${index}`,
+          snippet: "A relevant example page.",
+          content: "This is clean research text. ".repeat(200)
+        }))
       })
     };
     const scheduler = new ResearchScheduler(db, new Map([["web", provider]]));
@@ -123,10 +121,11 @@ describe("research storage and scheduler", () => {
     const counts = db.counts(job.id);
     expect(updated.status).toBe("completed");
     expect(counts.chunks_total).toBeGreaterThan(0);
+    expect(counts.sources_total).toBe(3);
     expect(db.chunksForJob(job.id, 1)[0].text).toContain("clean research text");
 
     const deleted = db.deleteJob(job.id);
-    expect(deleted.deleted_sources).toBe(1);
+    expect(deleted.deleted_sources).toBe(3);
     expect(db.getJob(job.id)).toBeUndefined();
     db.close();
   });
