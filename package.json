@@ -11,7 +11,7 @@
     "access": "public"
   },
   "bin": {
-    "deep-research-mcp": "./dist/index.js"
+    "deep-research-mcp": "dist/index.js"
   },
   "files": [
     "dist",
