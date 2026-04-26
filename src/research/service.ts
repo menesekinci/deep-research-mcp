@@ -41,7 +41,7 @@ export class ResearchService {
     return service;
   }
 
-  start(input: ResearchStartInput): ResearchJob & { estimated_budget: ReturnType<typeof budgetForDepth> } {
+  start(input: ResearchStartInput): ResearchJob & { job_id: string; estimated_budget: ReturnType<typeof budgetForDepth> } {
     const depth = input.depth ?? this.config.defaultDepth;
     const budget = budgetForDepth(depth);
     const sourceTypes = normalizeSourceTypes(input.source_types ?? this.config.defaultSourceTypes);
@@ -61,7 +61,7 @@ export class ResearchService {
     this.db.saveAfterBatch();
     this.db.addEvent(job.id, "info", "research job started", { sourceTypes, depth });
     this.scheduler.kick();
-    return { ...job, estimated_budget: { ...budget, maxSources: job.maxSources, durationMinutes: job.durationMinutes } };
+    return { ...job, job_id: job.id, estimated_budget: { ...budget, maxSources: job.maxSources, durationMinutes: job.durationMinutes } };
   }
 
   status(jobId: string): Record<string, unknown> {
@@ -70,6 +70,8 @@ export class ResearchService {
       return { error: "not_found", job_id: jobId };
     }
     return {
+      job_id: job.id,
+      status: job.status,
       job,
       progress: this.db.counts(jobId),
       next_check_after_seconds: job.nextRunAt ? secondsUntil(new Date(job.nextRunAt)) : job.nextCheckAfterSeconds

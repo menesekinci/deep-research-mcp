@@ -5,7 +5,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { loadConfig } from "../src/config.js";
-import { ResearchScheduler } from "../src/research/service.js";
+import { ResearchScheduler, ResearchService } from "../src/research/service.js";
 import type { SearchProvider } from "../src/research/types.js";
 import { expandQueries } from "../src/research/queryExpansion.js";
 import { normalizeUrl } from "../src/research/url.js";
@@ -61,6 +61,29 @@ describe("config loading", () => {
 });
 
 describe("research storage and scheduler", () => {
+  it("returns top-level job_id and status fields from service tools", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "deep-research-service-"));
+    const service = await ResearchService.create({
+      homeDir: tmp,
+      dbPath: path.join(tmp, "research.sqlite"),
+      defaultDepth: "standard",
+      defaultSourceTypes: ["github"]
+    });
+
+    const started = service.start({
+      query: "mcp test",
+      source_types: ["github"],
+      max_sources: 1,
+      duration_minutes: 1
+    });
+    const status = service.status(started.job_id);
+
+    expect(started.job_id).toBe(started.id);
+    expect(status.job_id).toBe(started.id);
+    expect(status.status).toBeDefined();
+    service.close();
+  });
+
   it("runs a job with a mocked provider and stores clean chunks", async () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "deep-research-"));
     const db = await ResearchDb.open(path.join(tmp, "research.sqlite"));
