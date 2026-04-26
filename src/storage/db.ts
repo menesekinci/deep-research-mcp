@@ -191,7 +191,10 @@ export class ResearchDb {
 
   pendingQueries(jobId: string, limit: number): ResearchQuery[] {
     return this.all<Record<string, unknown>>(
-      `SELECT * FROM research_queries WHERE job_id = ? AND status IN ('pending', 'rate_limited') ORDER BY created_at ASC LIMIT ?`,
+      `SELECT * FROM research_queries
+       WHERE job_id = ? AND status IN ('pending', 'rate_limited')
+       ORDER BY CASE WHEN status = 'pending' THEN 0 ELSE 1 END, created_at ASC
+       LIMIT ?`,
       [jobId, limit]
     ).map(mapQuery);
   }

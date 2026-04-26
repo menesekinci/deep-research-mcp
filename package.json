@@ -1,6 +1,6 @@
 {
   "name": "@menesekinci/deep-research-mcp",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Async deep research MCP server for AI agents and MCP clients with Brave, GitHub, Context7, and SQLite-backed local storage.",
   "type": "module",
   "repository": {
