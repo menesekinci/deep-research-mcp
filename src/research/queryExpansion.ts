@@ -2,9 +2,10 @@ import type { ResearchDepth } from "./types.js";
 
 export function expandQueries(query: string, depth: ResearchDepth): string[] {
   const base = query.trim();
-  const core = compactQuery(base);
+  const compact = compactQueries(base);
+  const core = compact[0] ?? base;
   const variants = [
-    core,
+    ...compact,
     `${core} official documentation`,
     `${core} GitHub repository`,
     `${core} examples`,
@@ -39,14 +40,24 @@ export function expandQueries(query: string, depth: ResearchDepth): string[] {
   return [...new Set(variants.map((item) => item.trim()).filter(Boolean))];
 }
 
-function compactQuery(query: string): string {
+function compactQueries(query: string): string[] {
   const important = query
     .replace(/[^\p{L}\p{N}.+#-]+/gu, " ")
     .split(/\s+/)
     .map((token) => token.trim())
     .filter(Boolean)
     .filter((token) => !STOPWORDS.has(token.toLowerCase()));
-  return important.slice(0, 6).join(" ") || query;
+  if (important.length === 0) {
+    return [query];
+  }
+  const head = important[0];
+  const variants = [
+    important.slice(0, 2).join(" "),
+    important.slice(0, 3).join(" "),
+    ...important.slice(1, 7).map((token) => `${head} ${token}`),
+    important.slice(0, 6).join(" ")
+  ];
+  return [...new Set(variants.map((item) => item.trim()).filter((item) => item.length > 0))];
 }
 
 const STOPWORDS = new Set([
