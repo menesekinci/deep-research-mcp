@@ -14,7 +14,7 @@ const formatSchema = z.enum(["json", "markdown", "toon"]);
 export async function createServer(): Promise<{ server: McpServer; service: ResearchService }> {
   const service = await ResearchService.create(loadConfig());
   const server = new McpServer({
-    name: "codex-deep-research",
+    name: "deep-research",
     version: "0.1.0"
   });
 

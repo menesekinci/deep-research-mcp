@@ -1,13 +1,13 @@
-# Codex Deep Research MCP
+# Deep Research MCP
 
-Async deep research MCP server for Codex. It starts long-running research jobs, searches Brave/GitHub/Context7, fetches and cleans sources, stores chunks in local SQLite, and lets the agent retrieve reports or targeted evidence without dumping every page into context.
+Async deep research MCP server for AI agents and MCP clients. It starts long-running research jobs, searches Brave/GitHub/Context7, fetches and cleans sources, stores chunks in local SQLite, and lets clients retrieve reports or targeted evidence without dumping every page into context.
 
 ## Usage
 
 ```toml
 [mcp_servers.deep-research]
 command = "npx"
-args = ["-y", "@menesekinci/codex-deep-research-mcp@latest"]
+args = ["-y", "@menesekinci/deep-research-mcp@latest"]
 ```
 
 Until the npm package is published, use the GitHub fallback:
@@ -15,7 +15,7 @@ Until the npm package is published, use the GitHub fallback:
 ```toml
 [mcp_servers.deep-research]
 command = "npx"
-args = ["-y", "github:menesekinci/codex-deep-research-mcp"]
+args = ["-y", "github:menesekinci/deep-research-mcp"]
 ```
 
 Environment:
@@ -23,7 +23,10 @@ Environment:
 - `BRAVE_API_KEY` is required for web search.
 - `GITHUB_TOKEN` is optional for higher limits/private repositories.
 - `CONTEXT7_API_KEY` is optional.
-- `CODEX_DEEP_RESEARCH_HOME` defaults to `~/.codex/deep-research`.
+- `DEEP_RESEARCH_HOME` defaults to `~/.deep-research-mcp`.
+- `DEEP_RESEARCH_DB` can point directly to a custom SQLite file.
+
+Legacy `CODEX_DEEP_RESEARCH_HOME` and `CODEX_DEEP_RESEARCH_DB` environment variables are still accepted as aliases.
 
 ## Tools
 

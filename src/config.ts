@@ -14,10 +14,12 @@ export interface AppConfig {
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
-  const homeDir = expandHome(env.CODEX_DEEP_RESEARCH_HOME || path.join(os.homedir(), ".codex", "deep-research"));
+  const homeDir = expandHome(
+    env.DEEP_RESEARCH_HOME || env.CODEX_DEEP_RESEARCH_HOME || path.join(os.homedir(), ".deep-research-mcp")
+  );
   return {
     homeDir,
-    dbPath: env.CODEX_DEEP_RESEARCH_DB || path.join(homeDir, "research.sqlite"),
+    dbPath: env.DEEP_RESEARCH_DB || env.CODEX_DEEP_RESEARCH_DB || path.join(homeDir, "research.sqlite"),
     braveApiKey: env.BRAVE_API_KEY,
     githubToken: env.GITHUB_TOKEN,
     context7ApiKey: env.CONTEXT7_API_KEY,

@@ -17,7 +17,7 @@ export async function fetchCleanText(url: string): Promise<FetchResult> {
   try {
     const response = await fetch(url, {
       headers: {
-        "User-Agent": "codex-deep-research-mcp/0.1",
+        "User-Agent": "deep-research-mcp/0.1",
         Accept: "text/html, text/plain, application/xhtml+xml"
       },
       redirect: "follow"

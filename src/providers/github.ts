@@ -73,7 +73,7 @@ export class GitHubProvider implements SearchProvider {
     const response = await fetch(url, {
       headers: {
         Accept: "application/vnd.github+json",
-        "User-Agent": "codex-deep-research-mcp",
+        "User-Agent": "deep-research-mcp",
         ...(this.token ? { Authorization: `Bearer ${this.token}` } : {})
       }
     });

@@ -1,17 +1,17 @@
 {
-  "name": "@menesekinci/codex-deep-research-mcp",
+  "name": "@menesekinci/deep-research-mcp",
   "version": "0.1.0",
-  "description": "Async deep research MCP server for Codex with Brave, GitHub, Context7, and SQLite-backed local storage.",
+  "description": "Async deep research MCP server for AI agents and MCP clients with Brave, GitHub, Context7, and SQLite-backed local storage.",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/menesekinci/codex-deep-research-mcp.git"
+    "url": "git+https://github.com/menesekinci/deep-research-mcp.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "bin": {
-    "codex-deep-research-mcp": "./dist/index.js"
+    "deep-research-mcp": "./dist/index.js"
   },
   "files": [
     "dist",
