@@ -1,3 +1,5 @@
+<img width="1672" height="941" alt="ChatGPT Image 26 Nis 2026 13_37_20" src="https://github.com/user-attachments/assets/1c981613-e309-4103-aba6-8c1cae50c83a" />
+
 # Deep Research MCP
 
 Async deep research MCP server for AI agents and MCP clients. It starts long-running research jobs, searches Brave/GitHub/Context7, fetches and cleans sources, stores chunks in local SQLite, and lets clients retrieve reports or targeted evidence without dumping every page into context.
