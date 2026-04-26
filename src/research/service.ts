@@ -56,8 +56,8 @@ export class ResearchService {
       durationMinutes: input.duration_minutes
     });
     const queries = expandQueries(input.query, depth).slice(0, budget.queryLimit);
-    for (const provider of sourceTypes) {
-      for (const query of queries) {
+    for (const query of queries) {
+      for (const provider of sourceTypes) {
         this.db.addQuery(job.id, provider, query);
       }
     }
@@ -189,7 +189,7 @@ export class ResearchScheduler {
 
   private async runSearchCycle(job: ResearchJob): Promise<void> {
     const budget = budgetForDepth(job.depth);
-    const queries = this.db.pendingQueries(job.id, 5);
+    const queries = this.db.pendingQueries(job.id, Math.max(5, Math.min(budget.queryLimit, 12)));
     for (const query of queries) {
       const provider = this.providers.get(query.provider);
       if (!provider) {
@@ -219,7 +219,7 @@ export class ResearchScheduler {
         if (isRateLimit(error)) {
           this.db.updateQuery(query.id, "rate_limited", error.message);
           this.db.updateJob(job.id, { status: "waiting", nextRunAt: error.retryAt.toISOString() });
-          return;
+          continue;
         }
         this.db.updateQuery(query.id, "failed", errorMessage(error));
       }
