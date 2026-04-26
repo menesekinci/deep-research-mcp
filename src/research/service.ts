@@ -158,8 +158,9 @@ export class ResearchScheduler {
       const counts = this.db.counts(fresh.id);
       const pendingQueries = this.db.pendingQueries(fresh.id, 1).length;
       const pendingSources = this.db.pendingSources(fresh.id, 1).length;
-      const enoughSources = Number(counts.sources_total ?? 0) >= latest.maxSources;
-      const done = enoughSources || (pendingQueries === 0 && pendingSources === 0);
+      const enoughFetchedSources = Number(counts.sources_fetched ?? 0) >= latest.maxSources;
+      const noMoreWork = pendingQueries === 0 && pendingSources === 0;
+      const done = enoughFetchedSources || noMoreWork;
       if (done) {
         const completedAt = nowIso();
         const completedJob: ResearchJob = { ...latest, status: "completed", completedAt, nextRunAt: null };

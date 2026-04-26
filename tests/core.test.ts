@@ -122,6 +122,7 @@ describe("research storage and scheduler", () => {
     expect(updated.status).toBe("completed");
     expect(counts.chunks_total).toBeGreaterThan(0);
     expect(counts.sources_total).toBe(3);
+    expect(counts.sources_fetched).toBe(3);
     expect(db.chunksForJob(job.id, 1)[0].text).toContain("clean research text");
 
     const deleted = db.deleteJob(job.id);

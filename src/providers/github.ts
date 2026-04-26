@@ -11,14 +11,6 @@ interface GitHubRepoItem {
   default_branch?: string;
 }
 
-interface GitHubIssueItem {
-  title: string;
-  html_url: string;
-  body?: string;
-  repository_url?: string;
-  updated_at?: string;
-}
-
 export class GitHubProvider implements SearchProvider {
   readonly sourceType = "github" as const;
 
@@ -48,22 +40,6 @@ export class GitHubProvider implements SearchProvider {
         content: readme || undefined,
         score: repo.stargazers_count ? Math.log10(repo.stargazers_count + 1) * 5 : 0,
         metadata: { stars: repo.stargazers_count, updated_at: repo.updated_at, default_branch: repo.default_branch }
-      });
-    }
-
-    const issueData = await this.githubJson<{ items?: GitHubIssueItem[] }>(
-      `https://api.github.com/search/issues?q=${encodeURIComponent(`${query} type:issue`)}&sort=updated&per_page=${Math.min(max, 10)}`
-    );
-    for (const issue of issueData.items ?? []) {
-      candidates.push({
-        sourceType: "github",
-        provider: "github",
-        url: issue.html_url,
-        title: issue.title,
-        snippet: issue.body?.slice(0, 300) || "",
-        content: issue.body || undefined,
-        score: 8,
-        metadata: { updated_at: issue.updated_at, repository_url: issue.repository_url }
       });
     }
     return { candidates };
